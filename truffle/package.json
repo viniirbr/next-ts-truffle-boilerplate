@@ -11,5 +11,9 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^2.1.4",
+    "dotenv": "^16.0.3"
+  }
 }
