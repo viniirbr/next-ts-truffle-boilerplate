@@ -1,10 +1,22 @@
 import Head from 'next/head'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { EthereumContext } from '../src/context/EthereumContext'
 
 export default function Home() {
 
-  const { accounts } = useContext(EthereumContext);
+  const { accounts, contract } = useContext(EthereumContext);
+  const [xValueDisplay, setXValueDisplay] = useState<number>(0);
+  const [xValueInput, setXValueInput] = useState<string>('0');
+
+  async function getXValueFromContract() {
+    setXValueDisplay(await contract?.methods.x().call())
+  }
+
+  async function setXValueFromContract() {
+    await contract?.methods.setX(xValueInput).send({ from: accounts[0] })
+    setXValueDisplay(await contract?.methods.x().call())
+    setXValueInput('0');
+  }
 
   return (
     <>
@@ -16,6 +28,12 @@ export default function Home() {
       </Head>
       <main>
         <h1>{accounts[0]}</h1>
+        <button onClick={getXValueFromContract}>Interact with contract</button>
+        <h3>{xValueDisplay}</h3>
+        <div>
+          <input type="number" onChange={(e) => setXValueInput(e.target.value)} value={xValueInput}/>
+          <button onClick={setXValueFromContract}>Set</button>
+        </div>
       </main>
     </>
   )

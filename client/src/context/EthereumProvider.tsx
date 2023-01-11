@@ -1,6 +1,8 @@
 import { ReactNode, useEffect, useState } from "react";
 import Web3 from "web3";
+import { Contract } from 'web3-eth-contract'
 import { EthereumContext } from "./EthereumContext";
+import { abi } from '../../../truffle/build/contracts/FirstContract.json'
 
 interface Props {
     children: ReactNode
@@ -13,7 +15,8 @@ declare let window: {
 
 export function EthereumProvider({ children }: Props) {
 
-    const [accounts, setAccounts] = useState<string[]>([])
+    const [accounts, setAccounts] = useState<string[]>([]);
+    const [contract, setContract] = useState<Contract | undefined>();
 
     useEffect(() => {
 
@@ -23,6 +26,10 @@ export function EthereumProvider({ children }: Props) {
             if (window.ethereum) {
                 const web3 = new Web3(Web3.givenProvider);
                 setAccounts(await web3.eth.getAccounts())
+
+                const FirstContract = new web3.eth.Contract(abi as any, '0x67729c0D89f71A568c005b094FE00aD3255f7372');
+                setContract(FirstContract);
+
             } else {
                 window.alert("Download some wallet like Metamask.")
             }
@@ -30,7 +37,7 @@ export function EthereumProvider({ children }: Props) {
     }, [])
 
     return (
-        <EthereumContext.Provider value={{ accounts }}>
+        <EthereumContext.Provider value={{ accounts, contract }}>
             {children}
         </EthereumContext.Provider>
     )
