@@ -1,43 +1,7 @@
 import Head from 'next/head'
 import { useContext, useState } from 'react'
 import { EthereumContext } from '../src/context/EthereumContext'
-import ReactMarkdown from 'react-markdown'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-
-const firstContractTitle = `
-# First Contract
-~~~solidity
-~~~  
-`
-
-const contractCode = `
-// SPDX-License-Identifier: GPL-3.0
-
-pragma solidity ^0.8.17;
-
-contract FirstContract {
-    uint256 public x;
-
-    constructor() {
-        x = 0;
-    }
-
-    function setX(uint256 value) public {
-        x = value;
-    }
-}
-`
-
-const selectedAccountTitle = `
-  # Como obter a conta selecionada com *web3.js*
-  ~~~js
-  ~~~
-`
-
-const gettingSelectedAccount = `
-const web3 = new Web3(Web3.givenProvider);
-await web3.eth.getAccounts()
-`
+import { Markdown } from '../src/components/Markdown';
 
 export default function Home() {
 
@@ -68,45 +32,176 @@ export default function Home() {
         <section>
           <h1>O smart contract</h1>
           <p>Contrato para teste chamado <i>FirstContract</i>. Possui apenas uma
-            variável <i>public</i> chamada <b>x</b></p>. Por ser <i>public</i>, podemos
-          recuperar o seu valor com o método sem necessitar criar um <i>getter</i>.
+            variável <i>public</i> chamada <b>x</b>. Por ser <i>public</i>, podemos
+            recuperar o seu valor com o método sem necessitar criar um <i>getter</i>.</p>
           <div>
-            <ReactMarkdown className='markdown' components={{
-              code() {
-                return (
-                  <SyntaxHighlighter language='solidity'>
-                    {contractCode}
-                  </SyntaxHighlighter>
-                )
-              }
-            }} >
-              {firstContractTitle}
-            </ReactMarkdown>
+            <Markdown children={`
+# First Contract
+~~~solidity
+~~~  
+`}
+              code={`
+// SPDX-License-Identifier: GPL-3.0      
+pragma solidity ^0.8.17;
+              
+contract FirstContract {
+    uint256 public x;
+              
+    constructor() {
+          x = 0;
+    }
+              
+    function setX(uint256 value) public {
+        x = value;
+    }
+}
+`} language='solidity' />
+          </div>
+        </section>
+        <section>
+          <h1>Configurando a rede <i>blockchain</i> e fazendo o <i>deploy</i> do contrato</h1>
+          <div>
+            <Markdown children={`
+# truffle-config.js
+~~~js
+~~~
+Mais informações na [documentação do Truffle](https://trufflesuite.com/docs/truffle/reference/configuration/)  
+`}
+              code={`
+require('dotenv').config();
+const mnemonic = process.env.MNEMONIC.toString().trim();
+
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+
+module.exports = {
+
+  networks: {
+    development: {
+      host: "127.0.0.1",     // Localhost (default: none)
+      port: 9545,            // Standard Ethereum port (default: none)
+      network_id: "*",       // Any network (default: none)
+    },
+
+    matic: {
+      provider: () => new HDWalletProvider(mnemonic, 'https://rpc.ankr.com/polygon_mumbai'),
+      network_id: 80001,       // Goerli's id
+      confirmations: 2,    // # of confirmations to wait between deployments. (default: 0)
+      timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
+      skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
+    },
+  },
+  
+  contracts_build_directory: './build/contracts',
+  // Configure your compilers
+  compilers: {
+    solc: {
+      version: "0.8.17" 
+    }
+  }
+};
+`} language='javascript' />
+
+            <Markdown children={`
+  # 1_deploy_contract.js
+  ~~~js
+  ~~~
+  Mais informações na [documentação do Truffle](https://trufflesuite.com/docs/truffle/how-to/contracts/run-migrations/)  
+`} code={`
+const FirstContract = artifacts.require("FirstContract");
+
+module.exports = (deployer) => {
+    deployer.deploy(FirstContract)
+}
+`} language='javascript' />
+          </div>
+        </section>
+        <section>
+          <h1>Realizando o teste do contrato</h1>
+          <p>Antes de realizar o <i>deploy</i> do contrato na rede principal, é fundamental realizar os testes. Nesse exemplo,
+            verificamos ser o construtor atribui o valor 0 a x e se a função para atribuir um novo valor está
+            funcionando corretamente. O comando <code>truffle test</code> faz o deploy na rede de teste e executa
+            os testes.</p>
+          <div>
+            <Markdown children={`
+  # index.spec.js
+
+  ~~~js
+  ~~~
+  Mais informações na [documentação do Truffle](https://trufflesuite.com/docs/truffle/how-to/debug-test/write-tests-in-javascript/)
+`} code={`
+const FirstContract = artifacts.require("FirstContract"); //obtém o contrato compilado
+
+contract("FirstContract", async (accounts) => { //similar ao describe com exceção de que 
+//fornece contas para manipular o contrato
+    
+    it("should get x value equals 0", async () => {
+        const firstContract = await FirstContract.deployed();
+        const x = await firstContract.x.call();
+        assert.equal(x, 0, "x value is different from 0");
+    });
+    
+    it("should set x to some value", async () => {
+        const firstContract = await FirstContract.deployed();
+        const value = 10;
+        await firstContract.setX(value);
+        const x = await firstContract.x.call();
+        assert.equal(x, value, "x value is different from the value");     
+    })
+})
+`} language='javascript' />
           </div>
         </section>
         <section>
           <h1>Obtendo a conta selecionada no MetaMask</h1>
-          <p>Conta selecionada: {accounts}</p>
+          <p>Conta selecionada: <b>{accounts}</b></p>
           <div>
-            <ReactMarkdown className='markdown' components={{
-              code() {
-                return (
-                  <SyntaxHighlighter language='javascript'>
-                    {gettingSelectedAccount}
-                  </SyntaxHighlighter>
-                )
-              }
-            }} >
-              {selectedAccountTitle}
-            </ReactMarkdown>
+            <Markdown children={`
+  # Como obter a conta selecionada com *web3.js*
+  ~~~js
+  ~~~
+`} code={`
+if (window.ethereum) {
+  const web3 = new Web3(Web3.givenProvider);
+  await web3.eth.getAccounts()
+}
+`} language='javascript' />
           </div>
         </section>
-        <button onClick={getXValueFromContract}>Interact with contract</button>
-        <h3>{xValueDisplay}</h3>
-        <div>
-          <input type="number" onChange={(e) => setXValueInput(e.target.value)} value={xValueInput} />
-          <button onClick={setXValueFromContract}>Set</button>
-        </div>
+        <section>
+          <h1>Conectando e interagindo com o contrato</h1>
+          <div>
+            <Markdown children={`
+  # Conectando...
+  ~~~js
+  ~~~
+`} code={`
+// criando uma instância do contrato
+//  Utilize o array ABI localizado no arquivo de compilação e o endereço do contrato na *blockchain*.
+const FirstContract = new web3.eth.Contract(build.abi as any, '0x67729c0D89f71A568c005b094FE00aD3255f7372');
+
+// executando uma função de leitura
+await contract?.methods.x().call()
+
+// executando uma função que modifica estado (custa gas)
+await contract?.methods.setX(value).send({ from: accounts[0] })
+
+`} language='javascript' />
+          </div>
+          <div>
+            <button onClick={getXValueFromContract}>Ler o valor de x</button>
+            <h3>{xValueDisplay}</h3>
+          </div>
+          <div className='set-value-area'>
+            <input type="number" onChange={(e) => setXValueInput(e.target.value)} value={xValueInput}
+              min='0' />
+            <button onClick={setXValueFromContract}>Set</button>
+          </div>
+        </section>
+        <section>
+          <h1>Agora é sua vez!</h1>
+          <p>Seguindo as instruções acima, crie seu <i>smart contract</i>, faça os testes, o deploy e depois interaja
+          utilizando sua aplicação <i>front-end</i>.</p>
+        </section>
       </main>
     </>
   )

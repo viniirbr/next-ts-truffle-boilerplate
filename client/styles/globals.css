@@ -1,6 +1,76 @@
-section > div {
+body {
+    background: rgb(156, 196, 178);
+    background: linear-gradient(180deg, rgba(156, 196, 178, 1) 41%, rgba(201, 140, 167, 1) 63%, rgba(231, 109, 131, 1) 73%);
+    padding: 30px 20px;
+}
+
+input {
+    background: #393D3F;
+    width: 70px;
+    color: white;
+    border-radius: 5px;
+    height: 30px;
+    text-align: center;
+    border: none;
+    margin-right: 10px;
+}
+
+input:focus {
+    outline: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+button {
+    border-radius: 10px;
+    height: 40px;
+    border: none;
+    padding: 10px;
+    min-width: 30px;
+    box-sizing: border-box;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+section {
+    margin-bottom: 50px;
+}
+
+h1 {
+    font-size: 1.8rem;
+}
+
+h3 {
+    color: white;
+    font-size: 1.5rem;
+}
+
+p {
+    font-size: 1.2rem;
+    text-align: justify;
+
+}
+
+p>i {
+    font-size: 1.2rem;
+}
+
+section>div {
     display: flex;
     justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .markdown {
@@ -9,4 +79,11 @@ section > div {
     padding: 10px;
     background: #ccc;
     font-size: 0.7rem;
+    margin-bottom: 20px;
+}
+
+.set-value-area {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
