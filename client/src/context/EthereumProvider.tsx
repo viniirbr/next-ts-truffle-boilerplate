@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import Web3 from "web3";
 import { Contract } from 'web3-eth-contract'
 import { EthereumContext } from "./EthereumContext";
-import { abi } from '../../../truffle/build/contracts/FirstContract.json'
+import build from '../../../truffle/build/contracts/FirstContract.json'
 
 interface Props {
     children: ReactNode
@@ -27,7 +27,7 @@ export function EthereumProvider({ children }: Props) {
                 const web3 = new Web3(Web3.givenProvider);
                 setAccounts(await web3.eth.getAccounts())
 
-                const FirstContract = new web3.eth.Contract(abi as any, '0x67729c0D89f71A568c005b094FE00aD3255f7372');
+                const FirstContract = new web3.eth.Contract(build.abi as any, '0x67729c0D89f71A568c005b094FE00aD3255f7372');
                 setContract(FirstContract);
 
             } else {

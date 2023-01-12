@@ -1,1 +1,12 @@
+section > div {
+    display: flex;
+    justify-content: center;
+}
 
+.markdown {
+    width: 80%;
+    border-radius: 10px;
+    padding: 10px;
+    background: #ccc;
+    font-size: 0.7rem;
+}

@@ -83,7 +83,7 @@ module.exports = {
     // Useful for deploying to a public network.
     // Note: It's important to wrap the provider as a function to ensure truffle uses a new provider every time.
     matic: {
-      provider: () => new HDWalletProvider(mnemonic, `https://polygon-mumbai.g.alchemy.com/v2/xnikZVIyM7ffoiTzylNndAHOqwr84aoN`),
+      provider: () => new HDWalletProvider(mnemonic, `https://rpc.ankr.com/polygon_mumbai`),
       network_id: 80001,       // Goerli's id
       confirmations: 2,    // # of confirmations to wait between deployments. (default: 0)
       timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
